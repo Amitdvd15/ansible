@@ -1,0 +1,54 @@
+ansible-playbook -i jenkins_inventory jenkins_playbook.yml
+---
+- hosts: prod
+  become: yes
+  tasks:
+
+  - name: Create upgrade dir
+    file:
+      path: /tmp/jenkins_upgrade
+      state: directory
+      owner: root
+      group: root
+      mode: 0777
+    tags: create_upgrade_dir
+
+  - name: Download the latest WAR file
+    get_url:
+      url: http://get.jenkins.io/war-stable/latest/jenkins.war
+      dest: /tmp/jenkins_upgrade/jenkins.war
+      owner: root
+      group: root
+      remote_src: yes
+    tags: download
+    register: uncompressed_app
+
+  - name: Stop Jenkins service
+    service:
+      name: jenkins
+      state: stopped
+    tags: service_stop
+
+  - name: Backup current installation
+    copy:
+      src: /usr/lib/jenkins/jenkins.war
+      dest: /usr/lib/jenkins/jenkins.war.{{ lookup('pipe', 'date +%Y%m%d') }}
+      owner: root
+      group: root
+      remote_src: yes
+    tags: backup_installation
+
+  - name: Move LTS WAR to Jenkins installation path
+    ansible.builtin.shell: mv /tmp/jenkins_upgrade/jenkins.war /usr/lib/jenkins/jenkins.war
+
+  - name: Start Jenkins service
+    service:
+      name: jenkins
+      state: started
+    tags: service_start
+
+  - name: Clean temporary files
+    file:
+      path: /tmp/jenkins_upgrade
+      state: absent
+    tags: clean_tmp_files

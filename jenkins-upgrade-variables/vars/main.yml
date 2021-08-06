@@ -1,0 +1,5 @@
+---
+app_name: jenkins
+app_installation_path: /usr/lib/jenkins
+app_version: 2.289.3
+tmp_dir: jenkins_upgrade

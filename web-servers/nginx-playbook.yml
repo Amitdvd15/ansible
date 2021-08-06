@@ -1,0 +1,21 @@
+---
+- name: Install nginx
+  hosts: all
+  remote_user: hugo9995
+  become: yes
+
+  tasks:
+  - name: Install nginx
+    yum:
+      name: nginx
+      state: latest
+
+  - name: copy web page template
+    template:
+      src: index.html
+      dest: /usr/share/nginx/html/index.html
+
+  - name: start nginx
+    service:
+       name: nginx
+       state: started

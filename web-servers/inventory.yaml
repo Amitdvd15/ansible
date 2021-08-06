@@ -1,0 +1,14 @@
+all:
+  children:
+    dev:
+      hosts:
+        192.168.1.141:
+    test:
+      hosts:
+        192.168.1.141:
+    preprod:
+      children:
+        test:
+    prod:
+      hosts:
+        192.168.1.141:

@@ -1,0 +1,16 @@
+---
+- name: Instalar apache
+  hosts: production
+  remote_user: hugo9995
+  become: yes
+
+  tasks:
+  - name: Instalar apache
+    yum:
+      name: httpd
+      state: latest
+
+  - name: iniciar apache
+    service:
+       name: httpd
+       state: started
